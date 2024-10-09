@@ -1,5 +1,5 @@
 // chat.js
-import { collection, query, getDocs, addDoc, onSnapshot, doc, getDoc, orderBy, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+import { collection, query, getDocs, addDoc, onSnapshot, doc, getDoc, orderBy, serverTimestamp, setDoc, limit, startAfter, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 import { db } from './firebase.js';
 import { getConversationId } from './utils.js';
 import { currentUser, currentNickname } from './userInfo.js';
@@ -7,6 +7,9 @@ import { currentUser, currentNickname } from './userInfo.js';
 let selectedUserId = null;
 let selectedUserNickname = null; 
 let selectedConversationId = null;
+let lastVisibleMessage = null;
+const MESSAGES_PER_PAGE = 20;
+let loadedMessages = []; 
 
 export const initChat = async (userId, userNickname) => {
   selectedUserId = userId;
@@ -16,7 +19,8 @@ export const initChat = async (userId, userNickname) => {
 
   selectedConversationId = getConversationId(currentUser.uid, selectedUserId);
   await ensureConversationExists(selectedConversationId);
-  listenForMessages(selectedConversationId);
+  await loadInitialMessages(selectedConversationId);
+  listenForNewMessages(selectedConversationId);
 
   await addRecentChat(selectedUserId, selectedUserNickname);
   await addRecentChatToOtherUser(currentUser.uid, currentNickname, selectedUserId);
@@ -24,31 +28,149 @@ export const initChat = async (userId, userNickname) => {
   document.getElementById('search-results').innerHTML = '';
 };
 
-const listenForMessages = (conversationId) => {
+
+const loadInitialMessages = async (conversationId) => {
   if (!conversationId) return;
 
   const messagesCollection = collection(db, `conversations/${conversationId}/messages`);
-  const messagesQuery = query(messagesCollection, orderBy("timestamp", "asc"));
+  const messagesQuery = query(messagesCollection, orderBy("count", "desc"), limit(MESSAGES_PER_PAGE));
 
-  onSnapshot(messagesQuery, (querySnapshot) => {
-    const messages = [];
-    querySnapshot.forEach((docSnap) => {
-      const data = docSnap.data();
-      if (!data.timestamp) {
-        data.timestamp = new Date().getTime();
+  const querySnapshot = await getDocs(messagesQuery);
+  const messages = [];
+  querySnapshot.forEach((doc) => {
+    const messageData = doc.data();
+    if (messageData && messageData.senderId) {
+      messages.push({ id: doc.id, ...messageData }); 
+    }
+  });
+
+  if (messages.length > 0) {
+    lastVisibleMessage = querySnapshot.docs[querySnapshot.docs.length - 1];
+    loadedMessages = messages.reverse(); 
+    displayMessages(loadedMessages);
+  } else {
+    displayMessages([]);
+  }
+
+  setupInfiniteScroll();
+};
+
+
+
+const listenForNewMessages = (conversationId) => {
+  const messagesCollection = collection(db, `conversations/${conversationId}/messages`);
+  const newMessagesQuery = query(messagesCollection, orderBy("count", "desc"), limit(1));
+
+  onSnapshot(newMessagesQuery, (snapshot) => {
+    snapshot.docChanges().forEach((change) => {
+      if (change.type === "added") {
+        const newMessageData = change.doc.data();
+        if (newMessageData && newMessageData.senderId) {
+          const newMessage = { id: change.doc.id, ...newMessageData };
+          displayNewMessage(newMessage);
+        }
       }
-      messages.push(data);
     });
-
-    displayMessages(messages);
   });
 };
+
+
+const setupInfiniteScroll = () => {
+  const chatMessagesDiv = document.getElementById('chat-messages');
+  chatMessagesDiv.addEventListener('scroll', () => {
+    if (chatMessagesDiv.scrollTop === 0) {
+      loadMoreMessages();
+    }
+  });
+};
+
+const loadMoreMessages = async () => {
+  if (!selectedConversationId || !lastVisibleMessage) return;
+
+  const chatMessagesDiv = document.getElementById('chat-messages');
+
+  const previousScrollHeight = chatMessagesDiv.scrollHeight;
+  const previousScrollTop = chatMessagesDiv.scrollTop;
+
+  const messagesCollection = collection(db, `conversations/${selectedConversationId}/messages`);
+  const messagesQuery = query(
+    messagesCollection, 
+    orderBy("count", "desc"), 
+    startAfter(lastVisibleMessage),
+    limit(MESSAGES_PER_PAGE)
+  );
+
+  const querySnapshot = await getDocs(messagesQuery);
+  const newMessages = [];
+  querySnapshot.forEach((doc) => {
+    const messageData = doc.data();
+    if (messageData && messageData.senderId) {
+      const messageWithId = { id: doc.id, ...messageData };
+      if (!loadedMessages.find(msg => msg.id === messageWithId.id)) {
+        newMessages.push(messageWithId);
+      }
+    } else {
+      console.warn('Invalid message data:', messageData);
+    }
+  });
+
+  if (newMessages.length > 0) {
+    lastVisibleMessage = querySnapshot.docs[querySnapshot.docs.length - 1];
+    loadedMessages = [...newMessages.reverse(), ...loadedMessages];
+    displayMessages(loadedMessages);
+
+    const newScrollHeight = chatMessagesDiv.scrollHeight;
+    chatMessagesDiv.scrollTop = newScrollHeight - previousScrollHeight + previousScrollTop;
+  }
+};
+
+
+
+const displayNewMessage = (message) => {
+  if (loadedMessages.find(msg => msg.id === message.id)) {
+    return; 
+  }
+
+  loadedMessages.push(message);
+  const chatMessagesDiv = document.getElementById('chat-messages');
+
+  const messageDiv = document.createElement('div');
+  messageDiv.classList.add('chat-message');
+  messageDiv.classList.add(message.senderId === currentUser.uid ? 'outgoing' : 'incoming');
+
+  if (message.file) {
+    const fileElement = document.createElement('img');
+    fileElement.src = message.file;
+    fileElement.alt = "Attached file";
+    fileElement.style.maxWidth = "200px";
+    messageDiv.appendChild(fileElement);
+  } else if (message.text) {
+    const textSpan = document.createElement('span');
+    textSpan.innerHTML = `<strong>${message.senderNickname || 'Unknown'}:</strong> ${message.text}`;
+    messageDiv.appendChild(textSpan);
+  }
+
+  chatMessagesDiv.appendChild(messageDiv);
+  chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+};
+
+
 
 const displayMessages = (messages) => {
   const chatMessagesDiv = document.getElementById('chat-messages');
   chatMessagesDiv.innerHTML = ''; 
 
   messages.forEach((message) => {
+    if (!message || typeof message !== 'object') {
+      console.warn('Invalid message object:', message);
+      return;
+    }
+
+    if (!message.senderId) {
+      console.warn('Message object missing senderId:', message);
+      return;
+    }
+
     const messageDiv = document.createElement('div');
     messageDiv.classList.add('chat-message');
     messageDiv.classList.add(message.senderId === currentUser.uid ? 'outgoing' : 'incoming');
@@ -59,16 +181,23 @@ const displayMessages = (messages) => {
       fileElement.alt = "Attached file";
       fileElement.style.maxWidth = "200px"; 
       messageDiv.appendChild(fileElement);
-    } else {
+    } else if (message.text) {
       const textSpan = document.createElement('span');
-      textSpan.innerHTML = `<strong>${message.senderNickname}:</strong> ${message.text}`;
+      textSpan.innerHTML = `<strong>${message.senderNickname || 'Unknown'}:</strong> ${message.text}`;
       messageDiv.appendChild(textSpan);
+    } else {
+      console.warn('Message has neither file nor text:', message);
+      return;
     }
 
     chatMessagesDiv.appendChild(messageDiv);
-    chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight; 
   });
+
+  if (messages.length > 0) {
+    chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+  }
 };
+
 
 export const loadRecentChats = async () => {
   const recentChatsCollection = collection(db, `users/${currentUser.uid}/recentChats`);
@@ -98,7 +227,10 @@ const ensureConversationExists = async (conversationId) => {
   const conversationDoc = await getDoc(conversationDocRef);
 
   if (!conversationDoc.exists()) {
-    await setDoc(conversationDocRef, { createdAt: serverTimestamp() });
+    await setDoc(conversationDocRef, { 
+      createdAt: serverTimestamp(),
+      messageCount: 0
+    });
   }
 };
 
@@ -125,15 +257,24 @@ const sendMessage = async () => {
   const messageText = messageInput.value.trim();
 
   if (messageText && selectedConversationId) {
+    const conversationRef = doc(db, "conversations", selectedConversationId);
+    const conversationDoc = await getDoc(conversationRef);
+    const currentCount = conversationDoc.data().messageCount || 0;
+
     const newMessage = {
       senderId: currentUser.uid,
       senderNickname: currentNickname,
       text: messageText,
-      timestamp: serverTimestamp()
+      timestamp: serverTimestamp(),
+      count: currentCount + 1
     };
 
     const messagesCollection = collection(db, `conversations/${selectedConversationId}/messages`);
     await addDoc(messagesCollection, newMessage);
+
+    await updateDoc(conversationRef, {
+      messageCount: increment(1)
+    });
 
     messageInput.value = ''; 
   } else {
@@ -150,15 +291,24 @@ const handleFileUpload = async (event) => {
     reader.onloadend = async () => {
       const base64String = reader.result;
 
+      const conversationRef = doc(db, "conversations", selectedConversationId);
+      const conversationDoc = await getDoc(conversationRef);
+      const currentCount = conversationDoc.data().messageCount || 0;
+
       const newMessage = {
         senderId: currentUser.uid,
         senderNickname: currentNickname,
-        file: base64String, 
-        timestamp: serverTimestamp()
+        file: base64String,
+        timestamp: serverTimestamp(),
+        count: currentCount + 1
       };
 
       const messagesCollection = collection(db, `conversations/${selectedConversationId}/messages`);
       await addDoc(messagesCollection, newMessage);
+
+      await updateDoc(conversationRef, {
+        messageCount: increment(1)
+      });
 
       event.target.value = '';
     };
