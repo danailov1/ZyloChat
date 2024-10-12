@@ -8,12 +8,31 @@
     <title>ZyloChat</title>
 </head>
 <body>
-        <div class="chat-container">
+    <div class="chat-container">
         <div class="chat-sidebar">
-            <input type="text" id="search-bar" placeholder="Search">
+            <div class="sidebar-header">
+                <button id="menu-toggle" class="menu-toggle">☰</button>
+                <input type="text" id="search-bar" placeholder="Search">
+            </div>
             <div id="search-results" class="search-results-dropdown"></div>
             <ul id="recent-chats-list">
                 <!-- List of recent chats will be dynamically populated here -->
+            </ul>
+        </div>
+
+        <!-- Side Menu -->
+        <div class="side-menu">
+            <ul>
+                
+                <li class="unclickable"></i></li>
+                <li><i class="fas fa-bookmark"></i> Saved Messages</li>
+                <li><i class="fas fa-address-book"></i> Contacts</li>
+                <li><i class="fas fa-history"></i> My Stories</li>
+                <li><i class="fas fa-cog"></i> Settings</li>
+                <li><i class="fas fa-moon"></i> Night Mode</li>
+                <li><i class="fas fa-play"></i> Animations</li>
+                <li><i class="fas fa-info-circle"></i> ZyloChat Features</li>
+                <li><i class="fas fa-bug"></i> Report a Bug</li>
             </ul>
         </div>
 
@@ -30,11 +49,13 @@
                 <input type="text" id="message-input" placeholder="Type a message...">
                 <button id="send-btn"></button>
                 <button id="attach-btn"></button>
-                <button id = "record-audio-btn"></button>
+                <button id="record-audio-btn"></button>
                 <input type="file" id="file-input" accept="*/*">
             </div>
         </div>
     </div>
 
-    <script type="module" src="/js/main.js"></script></body>
+    <script type="module" src="/js/main.js"></script>
+    <script type="module" src="/js/menu.js"></script>
+</body>
 </html>
