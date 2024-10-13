@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (menuToggle && sideMenu) {
         menuToggle.addEventListener('click', function(event) {
             sideMenu.classList.toggle('open');
-            event.stopPropagation(); // Prevent the click from bubbling up
+            event.stopPropagation(); 
             console.log('Menu toggled:', sideMenu.classList.contains('open') ? 'Opened' : 'Closed');
         });
 

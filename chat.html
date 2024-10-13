@@ -19,12 +19,10 @@
                 <!-- List of recent chats will be dynamically populated here -->
             </ul>
         </div>
-
-        <!-- Side Menu -->
+        
         <div class="side-menu">
             <ul>
-                
-                <li class="unclickable"></i></li>
+                <li class="unclickable"></li>
                 <li><i class="fas fa-bookmark"></i> Saved Messages</li>
                 <li><i class="fas fa-address-book"></i> Contacts</li>
                 <li><i class="fas fa-history"></i> My Stories</li>
@@ -35,26 +33,38 @@
                 <li><i class="fas fa-bug"></i> Report a Bug</li>
             </ul>
         </div>
-
+        
         <div class="chat-content">
             <div class="chat-header">
-                <h2 id="chat-title">Chat...</h2>
+                <div class="user-info">
+                    <div class="avatar"></div>
+                    <div class="user-details">
+                        <h2 id="chat-title">Chat Title</h2>
+                    </div>
+                </div>
+                <div class="header-icons">
+                    <i class="fas fa-search"></i>
+                    <i class="fas fa-phone"></i>
+                    <i class="fas fa-ellipsis-v"></i>
+                </div>
             </div>
-
+            
             <div class="chat-messages" id="chat-messages">
                 <!-- Chat messages will be dynamically populated here -->
             </div>
-
-            <div class="chat-input">
-                <input type="text" id="message-input" placeholder="Type a message...">
-                <button id="send-btn"></button>
-                <button id="attach-btn"></button>
-                <button id="record-audio-btn"></button>
-                <input type="file" id="file-input" accept="*/*">
+            
+            <div class="chat-input-container" id="chat-input-container">
+                <div class="chat-input">
+                    <i class="far fa-smile"></i>
+                    <input type="text" id="message-input" placeholder="Message">
+                    <i class="fas fa-paperclip" id="attach-btn"></i>
+                    <i class="fa-regular fa-paper-plane" id="send-btn"></i>
+                    <input type="file" id="file-input" accept="*/*">
+                </div>
             </div>
         </div>
     </div>
-
+    
     <script type="module" src="/js/main.js"></script>
     <script type="module" src="/js/menu.js"></script>
 </body>
