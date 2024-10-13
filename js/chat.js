@@ -11,6 +11,12 @@ let lastVisibleMessage = null;
 const MESSAGES_PER_PAGE = 20;
 let loadedMessages = []; 
 
+const scrollToBottom = () => {
+  const chatMessagesDiv = document.getElementById('chat-messages');
+  chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight; // Instantly jump to the bottom
+};
+
+// Call this function when the DOM is loaded
 export const initChat = async (userId, userNickname) => {
   selectedUserId = userId;
   selectedUserNickname = userNickname;
@@ -26,6 +32,42 @@ export const initChat = async (userId, userNickname) => {
   await addRecentChatToOtherUser(currentUser.uid, currentNickname, selectedUserId);
   
   document.getElementById('search-results').innerHTML = '';
+
+  // Fetch and display last seen status
+  await updateLastSeenStatus(selectedUserId);
+
+  scrollToBottom();
+};
+
+
+const updateLastSeenStatus = async (userId) => {
+  const userDocRef = doc(db, "users", userId);
+  const userDoc = await getDoc(userDocRef);
+
+  if (userDoc.exists()) {
+    const lastSeen = userDoc.data().lastSeen;
+    const lastSeenElement = document.querySelector('.chat-last-seen-status');
+
+    if (lastSeen) {
+      const lastSeenDate = lastSeen.toDate();
+      const now = new Date();
+      const diffInMinutes = Math.floor((now - lastSeenDate) / (1000 * 60));
+
+      if (diffInMinutes < 1) {
+        lastSeenElement.textContent = 'Online';
+      } else if (diffInMinutes < 60) {
+        lastSeenElement.textContent = `Last seen ${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
+      } else if (diffInMinutes < 1440) {
+        const hours = Math.floor(diffInMinutes / 60);
+        lastSeenElement.textContent = `Last seen ${hours} hour${hours > 1 ? 's' : ''} ago`;
+      } else {
+        const days = Math.floor(diffInMinutes / 1440);
+        lastSeenElement.textContent = `Last seen ${days} day${days > 1 ? 's' : ''} ago`;
+      }
+    } else {
+      lastSeenElement.textContent = 'Last seen status not available';
+    }
+  }
 };
 
 
@@ -55,8 +97,6 @@ const loadInitialMessages = async (conversationId) => {
   setupInfiniteScroll();
 };
 
-
-
 const listenForNewMessages = (conversationId) => {
   const messagesCollection = collection(db, `conversations/${conversationId}/messages`);
   const newMessagesQuery = query(messagesCollection, orderBy("count", "desc"), limit(1));
@@ -73,7 +113,6 @@ const listenForNewMessages = (conversationId) => {
     });
   });
 };
-
 
 const setupInfiniteScroll = () => {
   const chatMessagesDiv = document.getElementById('chat-messages');
@@ -124,8 +163,6 @@ const loadMoreMessages = async () => {
   }
 };
 
-
-
 const displayNewMessage = (message) => {
   if (loadedMessages.find(msg => msg.id === message.id)) {
     return; 
@@ -153,7 +190,6 @@ const displayNewMessage = (message) => {
   chatMessagesDiv.appendChild(messageDiv);
   chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
 };
-
 
 
 const displayMessages = (messages) => {
@@ -194,10 +230,9 @@ const displayMessages = (messages) => {
   });
 
   if (messages.length > 0) {
-    chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+    scrollToBottom(); // Instantly scroll to the bottom after displaying messages
   }
 };
-
 
 export const loadRecentChats = async () => {
   const recentChatsCollection = collection(db, `users/${currentUser.uid}/recentChats`);
@@ -252,6 +287,7 @@ export const initChatListeners = () => {
   document.getElementById('file-input').addEventListener('change', handleFileUpload);
 };
 
+
 const sendMessage = async () => {
   const messageInput = document.getElementById('message-input');
   const messageText = messageInput.value.trim();
@@ -276,11 +312,31 @@ const sendMessage = async () => {
       messageCount: increment(1)
     });
 
-    messageInput.value = ''; 
+    // Update last seen status after sending a message
+// Update last seen status after sending a message
+await updateLastSeenStatus(currentUser.uid);
+
+    // Clear the message input field
+    messageInput.value = '';
+    
+    // Reset the height and style of the input field
+    messageInput.style.height = '20px';
+    messageInput.style.overflowY = 'hidden';
+    document.querySelector('.chat-input-container').style.height = '36px';
+    document.querySelector('.chat-messages').style.paddingBottom = '60px';
+
+    // Trigger the input event to adjust the textarea size
+    const inputEvent = new Event('input', {
+      bubbles: true,
+      cancelable: true,
+    });
+    messageInput.dispatchEvent(inputEvent);
   } else {
     alert("Please select a user to chat with or enter a message!");
   }
 };
+
+
 
 const handleFileUpload = async (event) => {
   const file = event.target.files[0];
@@ -318,3 +374,55 @@ const handleFileUpload = async (event) => {
     alert("Please select a user to chat with before sending a file.");
   }
 };
+
+function adjustTextareaHeight(textarea) {
+  textarea.style.height = 'auto';
+  const newHeight = Math.min(textarea.scrollHeight, 100);
+  textarea.style.height = newHeight + 'px';
+  
+  // Show scrollbar only if content exceeds max height
+  textarea.style.overflowY = textarea.scrollHeight > 100 ? 'auto' : 'hidden';
+  
+  const container = document.querySelector('.chat-input-container');
+  container.style.height = (newHeight + 16) + 'px';
+  
+  const chatMessages = document.querySelector('.chat-messages');
+  chatMessages.style.paddingBottom = (newHeight + 26) + 'px';
+}
+
+function initExpandableInput() {
+  const textarea = document.getElementById('message-input');
+  
+  adjustTextareaHeight(textarea);
+
+  textarea.addEventListener('input', function() {
+    adjustTextareaHeight(this);
+  });
+
+  textarea.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+      this.style.height = 'auto';
+      this.style.overflowY = 'hidden';
+      adjustTextareaHeight(this);
+    }
+  });
+
+  textarea.addEventListener('focus', function() {
+    adjustTextareaHeight(this);
+  });
+
+  textarea.addEventListener('blur', function() {
+    if (this.value === '') {
+      this.style.height = '20px';
+      this.style.overflowY = 'hidden';
+      document.querySelector('.chat-input-container').style.height = '36px';
+      document.querySelector('.chat-messages').style.paddingBottom = '60px';
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', initExpandableInput);
+
+

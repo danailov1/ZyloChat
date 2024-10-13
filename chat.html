@@ -30,7 +30,7 @@
                 <li><i class="fas fa-moon"></i> Night Mode</li>
                 <li><i class="fas fa-play"></i> Animations</li>
                 <li><i class="fas fa-info-circle"></i> ZyloChat Features</li>
-                <li><i class="fas fa-bug"></i> Report a Bug</li>
+                <li><i class="fas fa-bug"></i> Logout</li>
             </ul>
         </div>
         
@@ -40,6 +40,9 @@
                     <div class="avatar"></div>
                     <div class="user-details">
                         <h2 id="chat-title">Chat Title</h2>
+                        <p class="chat-last-seen-status">
+                            <!--dinamically put-->
+                        </p>
                     </div>
                 </div>
                 <div class="header-icons">
@@ -56,7 +59,7 @@
             <div class="chat-input-container" id="chat-input-container">
                 <div class="chat-input">
                     <i class="far fa-smile"></i>
-                    <input type="text" id="message-input" placeholder="Message">
+                    <textarea id="message-input" placeholder="Message" rows="1"></textarea>           
                     <i class="fas fa-paperclip" id="attach-btn"></i>
                     <i class="fa-regular fa-paper-plane" id="send-btn"></i>
                     <input type="file" id="file-input" accept="*/*">

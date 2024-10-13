@@ -222,22 +222,22 @@ body {
 
 .chat-input-container {
   position: absolute;
-  bottom: 20px;
+  bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
-  width: 80%;
+  width: 90%;
   max-width: 600px;
   background-color: rgba(255, 255, 255, 0.8);
   border-radius: 24px;
   padding: 8px;
-  z-index: 1000; /* Ensure it's above other elements */
+  z-index: 1000;
+  transition: height 0.3s ease;
 }
 
 .chat-input {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   background-color: transparent;
-  padding: 0;
 }
 
 .chat-input i {
@@ -249,15 +249,46 @@ body {
 
 #message-input {
   flex: 1;
-  padding: 8px 12px;
+  padding: 4px 12px;
   border: none;
   border-radius: 18px;
   font-size: 14px;
   background-color: transparent;
+  resize: none;
+  overflow-y: hidden; /* Change from auto to hidden */
+  min-height: 20px;
+  max-height: 100px;
+  transition: height 0.3s ease;
 }
+
 
 #message-input::placeholder {
   color: var(--text-secondary);
+}
+
+/* Custom scrollbar styles - these will only apply when needed */
+#message-input::-webkit-scrollbar {
+  width: 6px;
+}
+
+#message-input::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+#message-input::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+#message-input::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+
+.chat-messages {
+  padding-bottom: 60px;
+  transition: padding-bottom 0.3s ease;
 }
 
 #file-input {
@@ -308,6 +339,17 @@ body {
 
 .search-result-item:hover {
   background-color: var(--secondary-color);
+}
+
+@media (max-width: 768px) {
+  .chat-input-container {
+    width: 90%;
+    bottom: 10px;
+  }
+
+  .chat-messages {
+    padding-bottom: 70px;
+  }
 }
 
 @media (max-width: 1024px) {
@@ -428,4 +470,11 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+
+
+
+.chat-last-seen-status {
+  color: var(--text-secondary) !important; /* Forces the text color to black */
 }
