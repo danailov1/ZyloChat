@@ -472,9 +472,146 @@ body {
   background: #555;
 }
 
-
-
-
 .chat-last-seen-status {
   color: var(--text-secondary) !important; /* Forces the text color to black */
 }
+
+
+/* New styles for the group chat button */
+.group-chat-btn {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: #0088cc;
+  color: white;
+  border: none;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+.group-chat-btn:hover {
+  background-color: #006699;
+}
+
+
+@media (max-width: 768px) {
+  .chat-container {
+    flex-direction: column;
+  }
+
+  .chat-sidebar {
+    width: 100%;
+    height: 40%;
+  }
+
+  .chat-content {
+    width: 100%;
+    height: 60%;
+  }
+
+  .group-chat-btn {
+    bottom: 10px;
+    right: 10px;
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+}
+
+
+#group-search-bar {
+  flex: 1;
+  padding: 10px 15px;
+  border: 1px solid var(--light-gray);
+  border-radius: 21px;
+  background-color: var(--secondary-color);
+  font-size: 16px;
+  outline: none;
+  margin-left: 10px;
+}
+
+#create-group-btn {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+#selected-users-list {
+  list-style: none;
+  padding: 15px;
+}
+
+.group-name-container {
+    padding: 15px;
+}
+
+#group-name-input {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #e6e6e6;
+    border-radius: 21px;
+    font-size: 16px;
+}
+
+#selected-users-list {
+    list-style: none;
+    padding: 15px;
+}
+
+#selected-users-list li {
+    padding: 10px;
+    margin-bottom: 5px;
+    background-color: #f0f2f5;
+    border-radius: 21px;
+}
+
+.create-group-btn {
+    display: block;
+    width: calc(100% - 30px);
+    margin: 15px;
+    padding: 10px;
+    background-color: #008069;
+    color: white;
+    border: none;
+    border-radius: 21px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+
+.user-info {
+  display: flex; /* Align avatar and user-details side by side */
+  align-items: center; /* Vertically center the items */
+}
+
+.avatar {
+  margin-right: 10px; /* Add space between avatar and user-details */
+}
+
+
+
+.chat-messages {
+  background-color: transparent;
+}
+
+.chat-content {
+  flex: 1;
+  background-color: #fff;
+  background-size: cover;
+  background-attachment: fixed; /* This helps with scrolling */
+}
+
+
+

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZyloChat</title>
+  <title>Cipher</title>
   <link rel="stylesheet" href="/css/auth-design.css">
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
@@ -15,7 +15,7 @@
   </div>
   
   <div id="auth-screen" class="auth-screen">
-    <h1 id="auth-title">Login to ZyloChat</h1>
+    <h1 id="auth-title">Login to Cipher</h1>
 
     <div id="message-area" style="color: white; margin-bottom: 20px;"></div>
 
@@ -23,9 +23,11 @@
       <input type="text" id="signup-nickname" placeholder="Nickname" required>
       <input type="email" id="signup-email" placeholder="Email" required>
       <input type="password" id="signup-password" placeholder="Password" required>
+      <input type="file" id="signup-profile-pic" accept="image/*">
       <button id="signup-btn">Sign Up</button>
       <p>Already have an account? <a id="go-to-login">Login here</a></p>
     </div>
+    
     
     <div id="login-fields">
       <input type="email" id="login-email" placeholder="Email" required>

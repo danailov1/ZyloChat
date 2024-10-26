@@ -148,3 +148,27 @@ a:hover {
       font-size: 1.5em; 
   }
 }
+
+
+input[type="file"] {
+  display: block;
+  width: 100%;
+  background: none;
+  color: #ffffff;
+  margin-top: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+input[type="file"]::-webkit-file-upload-button {
+  background: rgba(255, 255, 255, 0.07);
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+input[type="file"]::-webkit-file-upload-button:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+}

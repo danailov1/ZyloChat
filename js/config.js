@@ -1,10 +1,10 @@
 // config.js
-export const firebaseConfig = {
-    apiKey: "AIzaSyCWNYaSXTDQDrEcHICIhLZkz-jtHyS2i60",
-    authDomain: "zylochat7.firebaseapp.com",
-    projectId: "zylochat7",
-    storageBucket: "zylochat7.appspot.com",
-    messagingSenderId: "630897643182",
-    appId: "1:630897643182:web:ea6045ed921ba42a5a673f"
-  };
-  
+export  const firebaseConfig = {
+  apiKey: "AIzaSyAKq26PoR840Z2dUvjEh2elyZ9wqPfZg8U",
+  authDomain: "cipher8818.firebaseapp.com",
+  projectId: "cipher8818",
+  storageBucket: "cipher8818.appspot.com",
+  messagingSenderId: "978740122961",
+  appId: "1:978740122961:web:e1c304074e4b2df4006f70",
+  measurementId: "G-0XTDZQX0FS"
+};

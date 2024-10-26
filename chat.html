@@ -1,3 +1,4 @@
+<!--chat.html-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/style.css">
     <script src="https://kit.fontawesome.com/ad31800fcc.js" crossorigin="anonymous"></script>
-    <title>ZyloChat</title>
+    <title>Cipher</title>
+    
 </head>
 <body>
     <div class="chat-container">
@@ -13,6 +15,7 @@
             <div class="sidebar-header">
                 <button id="menu-toggle" class="menu-toggle">☰</button>
                 <input type="text" id="search-bar" placeholder="Search">
+                <button id="group-chat-btn" class="group-chat-btn"><i class="fas fa-users"></i></button>
             </div>
             <div id="search-results" class="search-results-dropdown"></div>
             <ul id="recent-chats-list">
@@ -23,14 +26,11 @@
         <div class="side-menu">
             <ul>
                 <li class="unclickable"></li>
-                <li><i class="fas fa-bookmark"></i> Saved Messages</li>
-                <li><i class="fas fa-address-book"></i> Contacts</li>
-                <li><i class="fas fa-history"></i> My Stories</li>
                 <li><i class="fas fa-cog"></i> Settings</li>
                 <li><i class="fas fa-moon"></i> Night Mode</li>
                 <li><i class="fas fa-play"></i> Animations</li>
-                <li><i class="fas fa-info-circle"></i> ZyloChat Features</li>
-                <li><i class="fas fa-bug"></i> Logout</li>
+                <li><i class="fas fa-info-circle"></i> Cipher Features</li>
+                <li id="logout-btn"><i class="fas fa-bug"></i> Logout</li>
             </ul>
         </div>
         
@@ -41,7 +41,7 @@
                     <div class="user-details">
                         <h2 id="chat-title">Chat Title</h2>
                         <p class="chat-last-seen-status">
-                            <!--dinamically put-->
+                            <!-- Dynamically put -->
                         </p>
                     </div>
                 </div>
@@ -68,7 +68,11 @@
         </div>
     </div>
     
+    <!-- Ensure scripts are loaded in the correct order -->
     <script type="module" src="/js/main.js"></script>
     <script type="module" src="/js/menu.js"></script>
+    <script type="module" src="/js/groupChat.js"></script>
+<script type="module" src="/js/profile.js"></script>
+
 </body>
 </html>
