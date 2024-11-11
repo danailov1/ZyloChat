@@ -12,17 +12,21 @@ const MESSAGES_PER_PAGE = 20;
 let loadedMessages = [];
 let selectedConversationId = null;
 
-export const openGroupChatUI = () => {z
+export const openGroupChatUI = () => {
     const chatSidebar = document.querySelector('.chat-sidebar');
     chatSidebar.innerHTML = `
         <div class="sidebar-header">
-            <button id="back-to-chats" class="menu-toggle">←</button>
+       <button id="back-to-chats" class="back-button" aria-label="Back to chat list">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M20 12H4M11 19L4 12L11 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>
+</button>
             <input type="text" id="group-search-bar" placeholder="Search for users">
         </div>
         <div id="search-results" class="search-results-dropdown"></div>
         <ul id="selected-users-list"></ul>
         <div class="group-name-container">
-            <input type="text" id="group-name-input" placeholder="Enter group name">
+            <input type="text" id="group-name-input" placeholder="Group name">
         </div>
         <button id="create-group-btn" class="create-group-btn">Create Group</button>
     `;
@@ -30,6 +34,8 @@ export const openGroupChatUI = () => {z
     // Add event listeners
     document.getElementById('group-search-bar').addEventListener('keyup', debounce(performGroupSearch, 300));
     document.getElementById('create-group-btn').addEventListener('click', createGroupChat);
+    
+    // Add back button event listener
     document.getElementById('back-to-chats').addEventListener('click', backToMainChatList);
 };
 
@@ -303,7 +309,7 @@ const removeUserFromGroup = (userId) => {
 };
 
 
-/*const backToMainChatList = () => {
+export const backToMainChatList = () => {
     // Clear the selected users
     selectedUsers = [];
 
@@ -321,11 +327,46 @@ const removeUserFromGroup = (userId) => {
         </ul>
     `;
 
-    // Re-initialize event listeners for the main chat list
-    document.getElementById('menu-toggle').addEventListener('click', toggleMenu);
-    document.getElementById('search-bar').addEventListener('keyup', debounce(performSearch, 300));
-    document.getElementById('group-chat-btn').addEventListener('click', openGroupChatUI);
+    // Re-initialize menu toggle functionality directly
+    const menuToggle = document.getElementById('menu-toggle');
+    const sideMenu = document.querySelector('.side-menu');
+    
+    if (menuToggle && sideMenu) {
+        // Remove any existing listeners to prevent multiple attachments
+        const oldMenuToggle = menuToggle.cloneNode(true);
+        menuToggle.parentNode.replaceChild(oldMenuToggle, menuToggle);
 
-    // Reload the recent chats list
-    loadRecentChats();
-};*/
+        oldMenuToggle.addEventListener('click', function(event) {
+            sideMenu.classList.toggle('open');
+            event.stopPropagation(); 
+            console.log('Menu toggled:', sideMenu.classList.contains('open') ? 'Opened' : 'Closed');
+        });
+    }
+
+    // Re-add other event listeners
+    import('./chat.js').then(chat => {
+        const performSearch = chat.performSearch;
+        const loadRecentChats = chat.loadRecentChats;
+
+        document.getElementById('search-bar').addEventListener('keyup', debounce(performSearch, 300));
+        document.getElementById('group-chat-btn').addEventListener('click', openGroupChatUI);
+
+        loadRecentChats();
+    });
+
+    // Reset chat state
+    document.getElementById('chat-messages').innerHTML = '';
+    document.getElementById('chat-title').innerText = 'Chat Title';
+    
+    // Reset chat input
+    const messageInput = document.getElementById('message-input');
+    if (messageInput) {
+        messageInput.value = '';
+        messageInput.style.height = '20px';
+    }
+
+    // Hide chat content
+    import('./chatState.js').then(chatState => {
+        chatState.default.handleChatSelection(false);
+    });
+};

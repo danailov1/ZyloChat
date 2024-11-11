@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/css/style.css">
     <script src="https://kit.fontawesome.com/ad31800fcc.js" crossorigin="anonymous"></script>
     <title>Cipher</title>
+    <link rel="icon" href="assets/background-replacer-hd-result-modified.png" type="image/png">
     
 </head>
 <body>
@@ -26,10 +27,10 @@
         <div class="side-menu">
             <ul>
                 <li class="unclickable"></li>
-                <li><i class="fas fa-cog"></i> Settings</li>
-                <li><i class="fas fa-moon"></i> Night Mode</li>
+                <li id="settings-btn"><i class="fas fa-cog"></i> Settings</li>
+                <li id="dark-mode-btn"><i class="fas fa-moon"></i> Night Mode</li>
                 <li><i class="fas fa-play"></i> Animations</li>
-                <li><i class="fas fa-info-circle"></i> Cipher Features</li>
+                <li id="cipher-features-btn"><i class="fas fa-info-circle"></i> Cipher Features</li>
                 <li id="logout-btn"><i class="fas fa-bug"></i> Logout</li>
             </ul>
         </div>
@@ -58,13 +59,16 @@
             
             <div class="chat-input-container" id="chat-input-container">
                 <div class="chat-input">
-                    <i class="far fa-smile"></i>
+                    <i  id ="emoji" class="far fa-smile"></i>
                     <textarea id="message-input" placeholder="Message" rows="1"></textarea>           
                     <i class="fas fa-paperclip" id="attach-btn"></i>
                     <i class="fa-regular fa-paper-plane" id="send-btn"></i>
                     <input type="file" id="file-input" accept="*/*">
                 </div>
             </div>
+
+ 
+
         </div>
     </div>
     
@@ -73,6 +77,10 @@
     <script type="module" src="/js/menu.js"></script>
     <script type="module" src="/js/groupChat.js"></script>
 <script type="module" src="/js/profile.js"></script>
+<script type="module" src="/js/settings.js"></script>
+<script type="module" src="/js/cipherFeatures.js"></script>
+<script type="module" src="/js/emoji.js"></script>
+
 
 </body>
 </html>

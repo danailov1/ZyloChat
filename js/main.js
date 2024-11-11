@@ -10,6 +10,7 @@ const initApp = async () => {
   initChatListeners();
   await loadRecentChats();
 
+
   const groupChatBtn = document.getElementById('group-chat-btn');
   if (groupChatBtn) {
     groupChatBtn.addEventListener('click', openGroupChatUI);

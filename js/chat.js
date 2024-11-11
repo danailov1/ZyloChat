@@ -329,49 +329,52 @@ const updateMessageStatus = (messageId, status) => {
     }
   };
 
-export const loadRecentChats = async () => {
+  export const loadRecentChats = () => {
     if (!currentUser) {
         console.warn('currentUser is not set. Skipping loadRecentChats.');
         return;
-      }
+    }
+
+    const recentChatsCollection = collection(db, `users/${currentUser.uid}/recentChats`);
     
-  const recentChatsCollection = collection(db, `users/${currentUser.uid}/recentChats`);
-  const querySnapshot = await getDocs(recentChatsCollection);
+    // Listen for real-time updates in the recentChats collection
+    onSnapshot(recentChatsCollection, (snapshot) => {
+        const recentChatsList = document.getElementById('recent-chats-list');
+        recentChatsList.innerHTML = ''; // Clear the existing list
 
-  const recentChatsList = document.getElementById('recent-chats-list');
-  recentChatsList.innerHTML = '';
+        snapshot.forEach(async (recentChatDoc) => {
+            const recentChat = recentChatDoc.data();
+            const chatId = recentChatDoc.id;
 
-  for (const recentChatDoc of querySnapshot.docs) {
-      const recentChat = recentChatDoc.data();
-      const chatId = recentChatDoc.id;
+            if (chatId.startsWith('group_')) {
+                const groupDocRef = doc(db, "groups", chatId);
+                const groupDoc = await getDoc(groupDocRef);
 
-      if (chatId.startsWith('group_')) {
-          const groupDocRef = doc(db, "groups", chatId);
-          const groupDoc = await getDoc(groupDocRef);
+                if (groupDoc.exists()) {
+                    const groupName = groupDoc.data().groupName;
+                    const recentChatItem = document.createElement('li');
+                    recentChatItem.textContent = groupName;
+                    recentChatItem.setAttribute('data-chat-id', chatId);
+                    recentChatItem.addEventListener('click', () => initChat(chatId, groupName));
+                    recentChatsList.appendChild(recentChatItem);
+                }
+            } else {
+                const userDocRef = doc(db, "users", recentChat.userId);
+                const userDoc = await getDoc(userDocRef);
 
-          if (groupDoc.exists()) {
-              const groupName = groupDoc.data().groupName;
-              const recentChatItem = document.createElement('li');
-              recentChatItem.textContent = groupName;
-              recentChatItem.setAttribute('data-chat-id', chatId);
-              recentChatItem.addEventListener('click', () => initChat(chatId, groupName));
-              recentChatsList.appendChild(recentChatItem);
-          }
-      } else {
-          const userDocRef = doc(db, "users", recentChat.userId);
-          const userDoc = await getDoc(userDocRef);
-
-          if (userDoc.exists()) {
-              const nickname = userDoc.data().nickname;
-              const recentChatItem = document.createElement('li');
-              recentChatItem.textContent = nickname;
-              recentChatItem.setAttribute('data-user-id', recentChat.userId);
-              recentChatItem.addEventListener('click', () => initChat(recentChat.userId, nickname));
-              recentChatsList.appendChild(recentChatItem);
-          }
-      }
-  }
+                if (userDoc.exists()) {
+                    const nickname = userDoc.data().nickname;
+                    const recentChatItem = document.createElement('li');
+                    recentChatItem.textContent = nickname;
+                    recentChatItem.setAttribute('data-user-id', recentChat.userId);
+                    recentChatItem.addEventListener('click', () => initChat(recentChat.userId, nickname));
+                    recentChatsList.appendChild(recentChatItem);
+                }
+            }
+        });
+    });
 };
+
 
 const ensureConversationExists = async (conversationId) => {
   const conversationDocRef = doc(db, "conversations", conversationId);
@@ -570,6 +573,8 @@ const styles = `
 const styleSheet = document.createElement("style");
 styleSheet.textContent = styles;
 document.head.appendChild(styleSheet);
+
+
 
 
 

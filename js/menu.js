@@ -1,6 +1,6 @@
-// menu.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js";
+import { openCipherFeaturesWindow } from './cipherFeatures.js'; // Import the function
 
 // Firebase configuration
 const firebaseConfig = {
@@ -11,19 +11,18 @@ const firebaseConfig = {
     messagingSenderId: "978740122961",
     appId: "1:978740122961:web:e1c304074e4b2df4006f70",
     measurementId: "G-0XTDZQX0FS"
-  };
+};
 
-  // Initialize Firebase
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-
-// Initialize Firebase Auth
 const auth = getAuth(app);
 
 document.addEventListener('DOMContentLoaded', function() {
     const menuToggle = document.getElementById('menu-toggle');
     const sideMenu = document.querySelector('.side-menu');
     const logoutBtn = document.getElementById('logout-btn');
-    
+    const cipherFeaturesBtn = document.getElementById('cipher-features-btn'); // Get the button
+
     // Toggle side menu
     if (menuToggle && sideMenu) {
         menuToggle.addEventListener('click', function(event) {
@@ -48,12 +47,20 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Menu toggle button or side menu not found');
     }
 
+    // Event listener for Cipher Features button
+    if (cipherFeaturesBtn) {
+        cipherFeaturesBtn.addEventListener('click', function() {
+            openCipherFeaturesWindow(); // Call the function to open Cipher Features window
+        });
+    } else {
+        console.error('Cipher Features button not found');
+    }
+
     // Logout functionality
     if (logoutBtn) {
         logoutBtn.addEventListener('click', function() {
             signOut(auth).then(() => {
-                // Redirect to the login page
-                window.location.href = '/index.html';  // Change this to your login page URL
+                window.location.href = '/index.html';
             }).catch((error) => {
                 console.error('Error signing out:', error);
                 alert('Failed to log out. Please try again.');
