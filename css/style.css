@@ -647,10 +647,6 @@ body {
 }
 
 
-
-
-
-
 .back-button {
   display: flex;
   align-items: center;
@@ -726,6 +722,8 @@ body {
 .back-button:hover {
   color: #333;
 }
+
+
 
 /* Profile Section */
 .profile-section {
@@ -813,6 +811,8 @@ body {
   font-size: 0.95rem;
 }
 
+
+
 /* Settings Options */
 .settings-options {
   flex: 1;
@@ -885,50 +885,7 @@ body {
 
 
 
-/* General styling for incoming messages */
-.chat-message.incoming {
-  background-color: var(--chat-bubble-incoming);
-  color: var(--text-color);
-  padding: 10px 15px;
-  border-radius: 8px;
-  margin-bottom: 10px;
-  max-width: 60%;
-  align-self: flex-start; /* Aligns to the left */
-  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-/* Style for Cipher Features content */
-.chat-message.incoming h3 {
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 5px;
-  color: var(--primary-color);
-}
-
-.chat-message.incoming p {
-  font-size: 14px;
-  margin: 5px 0;
-  color: var(--text-secondary);
-}
-
-.chat-message.incoming ul {
-  list-style-type: disc;
-  padding-left: 20px;
-  margin: 10px 0;
-}
-
-.chat-message.incoming ul li {
-  font-size: 14px;
-  color: var(--text-color);
-  margin: 5px 0;
-}
-
-
-
-
-
-
-
+/*emoji*/
 #emoji-picker {
   position: absolute;
   top: 250px;

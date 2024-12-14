@@ -1,14 +1,20 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Add Font Awesome script dynamically
+    const fontAwesomeScript = document.createElement('script');
+    fontAwesomeScript.src = "https://kit.fontawesome.com/ad31800fcc.js";
+    fontAwesomeScript.crossOrigin = "anonymous";
+    document.head.appendChild(fontAwesomeScript);
+
     const emojiIcon = document.getElementById("emoji");
     const messageInput = document.getElementById("message-input");
-    
+
     // Create emoji picker element if it doesn't exist
     let emojiPicker = document.getElementById("emoji-picker");
     if (!emojiPicker) {
         emojiPicker = document.createElement("div");
         emojiPicker.id = "emoji-picker";
         document.body.appendChild(emojiPicker);
-        
+
         // Create internal structure
         emojiPicker.innerHTML = `
             <div class="emoji-nav"></div>
@@ -18,15 +24,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let emojiData = null;
 
-    // Category icons mapping
     const categoryIcons = {
-        'smileys-emotion': '😊',
-        'people-body': '👋',
-        'animals-nature': '🐶',
-        'food-drink': '🍎',
-        'travel-places': '✈️',
-        'objects': '💡'
+        'smileys-emotion': '<i class="fa-solid fa-face-smile-wink"></i>',
+        'people-body': '<i class="fa-solid fa-hands"></i>',
+        'animals-nature': '<i class="fa-solid fa-paw"></i>',
+        'food-drink': '<i class="fa-solid fa-apple-whole"></i>',
+        'travel-places': '<i class="fa-solid fa-plane"></i>',
+        'objects': '<i class="fa-solid fa-lightbulb"></i>'
     };
+    
+    
 
     // Show/hide emoji picker
     emojiIcon.addEventListener("click", async (e) => {
@@ -55,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function organizeEmojisByCategory(data) {
         const categories = {};
-        
+
         // Each item in the data array represents a category
         data.forEach(categoryData => {
             const categoryName = categoryData.category;
@@ -106,19 +113,19 @@ document.addEventListener('DOMContentLoaded', function() {
             button.className = 'nav-button';
             button.innerHTML = categoryIcons[category] || '📋';
             button.title = category.replace(/-/g, ' ');
-            
+
             button.addEventListener('click', () => {
                 const categorySection = document.getElementById(`category-${category}`);
                 if (categorySection) {
                     const emojiSections = emojiPicker.querySelector('.emoji-sections');
                     emojiSections.scrollTop = categorySection.offsetTop - emojiSections.offsetTop;
-                    
+
                     // Update active state
                     navBar.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
                     button.classList.add('active');
                 }
             });
-            
+
             navBar.appendChild(button);
         });
     }
@@ -128,15 +135,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const categoryDiv = document.createElement('div');
             categoryDiv.className = 'emoji-category';
             categoryDiv.id = `category-${category}`;
-            
+
             const header = document.createElement('h3');
             header.className = 'category-header';
             header.textContent = category.replace(/-/g, ' ');
             categoryDiv.appendChild(header);
-            
+
             const emojisContainer = document.createElement('div');
             emojisContainer.className = 'emojis-container';
-            
+
             if (categorizedEmojis[category] && categorizedEmojis[category].length > 0) {
                 categorizedEmojis[category].forEach(emoji => {
                     const button = document.createElement('button');
@@ -150,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     emojisContainer.appendChild(button);
                 });
             }
-            
+
             categoryDiv.appendChild(emojisContainer);
             emojiSections.appendChild(categoryDiv);
         });
@@ -168,14 +175,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const categories = emojiPicker.querySelectorAll('.emoji-category');
         const navButtons = emojiPicker.querySelectorAll('.nav-button');
         const scrollTop = emojiPicker.querySelector('.emoji-sections').scrollTop;
-        
+
         let activeCategory = null;
         categories.forEach((category) => {
             if (category.offsetTop <= scrollTop + 50) {
                 activeCategory = category.id;
             }
         });
-        
+
         if (activeCategory) {
             navButtons.forEach((btn) => {
                 const categoryId = `category-${btn.title.toLowerCase().replace(/\s+/g, '-')}`;

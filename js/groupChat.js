@@ -17,11 +17,9 @@ export const openGroupChatUI = () => {
     chatSidebar.innerHTML = `
         <div class="sidebar-header">
        <button id="back-to-chats" class="back-button" aria-label="Back to chat list">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-        <path d="M20 12H4M11 19L4 12L11 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-    </svg>
-</button>
-            <input type="text" id="group-search-bar" placeholder="Search for users">
+        <i class="fas fa-arrow-left"></i>
+     </button>
+            <input type="text" id="group-search-bar" placeholder="Search">
         </div>
         <div id="search-results" class="search-results-dropdown"></div>
         <ul id="selected-users-list"></ul>
@@ -298,8 +296,6 @@ export const sendGroupMessage = async (messageText, file) => {
         await Promise.all(updatePromises);
     }
 };
-
-
 
 
 const removeUserFromGroup = (userId) => {

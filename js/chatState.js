@@ -1,5 +1,4 @@
 // chatState.js
-import { currentUser } from './userInfo.js';
 
 export class ChatStateManager {
     constructor() {

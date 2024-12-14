@@ -8,7 +8,8 @@
     <script src="https://kit.fontawesome.com/ad31800fcc.js" crossorigin="anonymous"></script>
     <title>Cipher</title>
     <link rel="icon" href="assets/background-replacer-hd-result-modified.png" type="image/png">
-    
+    <script src="https://cdn.agora.io/sdk/release/AgoraRTC_N.js"></script>
+
 </head>
 <body>
     <div class="chat-container">
@@ -40,7 +41,7 @@
                 <div class="user-info">
                     <div class="avatar"></div>
                     <div class="user-details">
-                        <h2 id="chat-title">Chat Title</h2>
+                        <h2 id="chat-title"  data-user-id="target-user-uid" >Chat Title</h2>
                         <p class="chat-last-seen-status">
                             <!-- Dynamically put -->
                         </p>
@@ -78,8 +79,13 @@
     <script type="module" src="/js/groupChat.js"></script>
 <script type="module" src="/js/profile.js"></script>
 <script type="module" src="/js/settings.js"></script>
+<script type="module" src="/js/generalSettings.js"></script>
+<script type="module" src="/js/chatWallpaperSettings.js"></script>
 <script type="module" src="/js/cipherFeatures.js"></script>
 <script type="module" src="/js/emoji.js"></script>
+<script type="module" src="/js/voiceCalls.js"></script>
+
+
 
 
 </body>
